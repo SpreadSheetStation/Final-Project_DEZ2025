@@ -51,7 +51,7 @@ This project delivers a fully automated, Dockerized data pipeline to analyze Bit
    cd Final-Project_DEZ2025
 
 2. **Start Docker**:
-  ```bash
+    ```bash
     docker-compose up -d --build
 
 - Builds bitcoin-pipeline-airflow:latest.
@@ -62,7 +62,7 @@ This project delivers a fully automated, Dockerized data pipeline to analyze Bit
 - Login: admin / admin
 
 4. **Trigger Pipeline**:
-  ```bash
+    ```bash
     docker exec <scheduler_container_id> airflow dags trigger crypto_pipeline
 
 - Find <scheduler_container_id> with docker ps (e.g. final-project_dez2025-airflow-scheduler-1).
@@ -73,7 +73,7 @@ This project delivers a fully automated, Dockerized data pipeline to analyze Bit
 
 ## Infrastructure
 Terraform:
-  ```bash
+    ```bash
     cd terraform
     terraform init
     terraform apply
