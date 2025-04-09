@@ -1,5 +1,5 @@
 # Final-Project_DEZ2025
-Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
+Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 
 ## Bitcoin Trading Patterns Pipeline
 This project delivers a fully automated, Dockerized data pipeline to analyze Bitcoin trading patterns from 2018 to 2025. It pulls daily candlestick data from Kaggle’s “Bitcoin Historical Datasets 2018-2024” (sourced via Binance API), processes it with PySpark, and stores it in Google BigQuery for trading insights. Built with modern tools like Terraform, Airflow, and Docker, it’s portable, scalable, and ready for visualization in Looker Studio.
@@ -54,22 +54,22 @@ This project delivers a fully automated, Dockerized data pipeline to analyze Bit
   ```bash
     docker-compose up -d --build
 
--Builds bitcoin-pipeline-airflow:latest.
--Starts Postgres, Airflow webserver, scheduler, and initializes the DB.
+- Builds bitcoin-pipeline-airflow:latest.
+- Starts Postgres, Airflow webserver, scheduler, and initializes the DB.
 
 3. **Access Airflow UI**:
--URL: http://localhost:8080
--Login: admin / admin
+- URL: http://localhost:8080
+- Login: admin / admin
 
 4. **Trigger Pipeline**:
   ```bash
     docker exec <scheduler_container_id> airflow dags trigger crypto_pipeline
 
--Find <scheduler_container_id> with docker ps (e.g. final-project_dez2025-airflow-scheduler-1).
+- Find <scheduler_container_id> with docker ps (e.g. final-project_dez2025-airflow-scheduler-1).
 
 5. **Monitor**:
--UI: Watch crypto_pipeline run (pull_kaggle_data → load_to_bigquery → transform_data).
--Logs: docker logs <scheduler_container_id>.
+- UI: Watch crypto_pipeline run (pull_kaggle_data → load_to_bigquery → transform_data).
+- Logs: docker logs <scheduler_container_id>.
 
 ## Infrastructure
 Terraform:
@@ -84,6 +84,6 @@ Creates bitcoin-data-bucket-2025 (GCS) and final-project-dez2025.crypto_data (Bi
 GCS: gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv (daily updated).
 
 BigQuery:
--raw_prices: Raw candlesticks (~2,648+ rows, growing daily).
--daily_range: Transformed metrics (date, avg_price, price_range, price_range_pct, vwap).
+- raw_prices: Raw candlesticks (~2,648+ rows, growing daily).
+- daily_range: Transformed metrics (date, avg_price, price_range, price_range_pct, vwap).
 
