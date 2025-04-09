@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+  airflow-init:
+    build: .
+    image: bitcoin-pipeline-airflow:latest
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/final-project-creds.json
+    volumes:
+      - ./crypto_pipeline/dags:/opt/airflow/dags
+      - ./terraform/final-project-creds.json:/opt/airflow/final-project-creds.json
+      - ./docker-airflow-logs:/opt/airflow/logs
+    command: bash -c "airflow db init && airflow dags reserialize && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com && airflow dags unpause crypto_pipeline"
+    depends_on:
+      - postgres
+
+  airflow-webserver:
+    build: .
+    image: bitcoin-pipeline-airflow:latest
+    volumes:
+      - ./crypto_pipeline/dags:/opt/airflow/dags
+      - ./terraform/final-project-creds.json:/opt/airflow/final-project-creds.json
+      - ./docker-airflow-logs:/opt/airflow/logs
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/final-project-creds.json
+    ports:
+      - "8080:8080"
+    command: bash -c "sleep 10 && airflow webserver -p 8080"
+    depends_on:
+      - postgres
+      - airflow-init
+
+  airflow-scheduler:
+    build: .
+    image: bitcoin-pipeline-airflow:latest
+    volumes:
+      - ./crypto_pipeline/dags:/opt/airflow/dags
+      - ./terraform/final-project-creds.json:/opt/airflow/final-project-creds.json
+      - ./docker-airflow-logs:/opt/airflow/logs
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/final-project-creds.json
+    command: bash -c "sleep 10 && airflow scheduler"
+    depends_on:
+      - postgres
+      - airflow-init
+
+volumes:
+  postgres-db:
+  docker-airflow-logs:
