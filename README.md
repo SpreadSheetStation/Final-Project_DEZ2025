@@ -72,7 +72,7 @@ This project delivers a fully automated, Dockerized data pipeline to analyze Bit
 - Logs: docker logs <scheduler_container_id>.
 
 ## Infrastructure
-Terraform:
+**Terraform**:
     ```bash
     cd terraform
     terraform init
