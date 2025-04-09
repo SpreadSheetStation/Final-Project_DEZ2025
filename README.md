@@ -78,7 +78,7 @@ This project delivers a fully automated, Dockerized data pipeline to analyze Bit
    terraform init
    terraform apply
 
-Creates bitcoin-data-bucket-2025 (GCS) and final-project-dez2025.crypto_data (BigQuery).
+- Creates bitcoin-data-bucket-2025 (GCS) and final-project-dez2025.crypto_data (BigQuery).
 
 ## Outputs
 GCS: gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv (daily updated).
