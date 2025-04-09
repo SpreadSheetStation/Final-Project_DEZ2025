@@ -73,10 +73,10 @@ This project delivers a fully automated, Dockerized data pipeline to analyze Bit
 
 ## Infrastructure
 #### Terraform
-    ```bash
-    cd terraform
-    terraform init
-    terraform apply
+   ```bash
+   cd terraform
+   terraform init
+   terraform apply
 
 Creates bitcoin-data-bucket-2025 (GCS) and final-project-dez2025.crypto_data (BigQuery).
 
