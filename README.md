@@ -99,7 +99,7 @@ The Raw Data is then transformed with PySpark to Enhanced Data (Trading Metrics)
    ```bash
    cd terraform
    terraform init
-   terraform apply```
+   terraform apply
 
 - Creates bitcoin-data-bucket-2025 (GCS) and final-project-dez2025.crypto_data (BigQuery).
 
