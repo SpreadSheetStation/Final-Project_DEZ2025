@@ -1,8 +1,22 @@
-# Final-Project_DEZ2025
+# Bitcoin Trading Data Pipeline ( Final-Project_DEZ2025 ) 
 Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 
-## Bitcoin Trading Patterns Pipeline
-This project delivers a fully automated, Dockerized data pipeline to analyze Bitcoin trading patterns from 2018 to 2025. It pulls daily candlestick data from Kaggle’s “Bitcoin Historical Datasets 2018-2024” (sourced via Binance API), processes it with PySpark, and stores it in Google BigQuery for trading insights. Built with modern tools like Terraform, Airflow, and Docker, it’s portable, scalable, and ready for visualization in Looker Studio.
+## Table of Contents
+[Text you want to display](URL-you-want-to-link-to)
+
+## Project Introduction
+This project delivers a fully automated, Dockerized data pipeline to analyze Bitcoin trading data from 2018 to 2025 (till date).
+Built with modern tools like Terraform, Airflow, and Docker, it’s portable, scalable, and ready for practical insights for Day/Swing Trading and Trade Backtesting on the Daily Candle Timeframe.
+
+Extract
+It pulls the Raw Data (OHLCV market data with trade execution metrics) of the Bitcoin Daily Candle Timeframe from Kaggle’s “Bitcoin Historical Datasets 2018-2025”, 
+
+Load
+The Raw Data which has landed in a Google Cloud Storage bucket will then be loaded into BigQuery (Data Warehouse).
+
+Transform
+The Raw Data is then transformed with PySpark to Enhanced Data (Processed Trading Metrics enriched with calculations), and stored in Google BigQuery for trading insights.
+
 
 ### Project Overview
 - **Goal**: Help investors understand Bitcoin price volatility and trading activity with metrics like average price, price range, and VWAP.
