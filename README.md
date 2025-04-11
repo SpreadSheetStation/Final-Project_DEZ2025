@@ -4,24 +4,39 @@ Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 ## Table of Contents
 [Text you want to display](URL-you-want-to-link-to)
 
+
+
+
 ## Project Introduction
 This project delivers a fully automated, Dockerized data pipeline to analyze Bitcoin trading data from 2018 to 2025 (till date).
-Built with modern tools like Terraform, Airflow, and Docker, it’s portable, scalable, and ready for practical insights for Day/Swing Trading and Trade Backtesting on the Daily Candle Timeframe.
-
-Extract
-It pulls the Raw Data (OHLCV market data with trade execution metrics) of the Bitcoin Daily Candle Timeframe from Kaggle’s “Bitcoin Historical Datasets 2018-2025”, 
-
-Load
-The Raw Data which has landed in a Google Cloud Storage bucket will then be loaded into BigQuery (Data Warehouse).
-
-Transform
-The Raw Data is then transformed with PySpark to Enhanced Data (Processed Trading Metrics enriched with calculations), and stored in Google BigQuery for trading insights.
-
+Built with modern tools like Terraform, Airflow, and Docker, it’s portable, scalable, and ready for practical insights on essential data from the Daily Candle Timeframe for Long-term Investing, Trading and Backtesting of Bitcoin.
 
 ### Project Overview
 - **Goal**: Help investors understand Bitcoin price volatility and trading activity with metrics like average price, price range, and VWAP.
 - **Data**: Daily candlesticks (2018-2025) from Kaggle, updated daily via Binance API.
 - **Workflow**: Extract (Kaggle API), Load (GCS/BigQuery), Transform (PySpark) — an **ELT** pipeline orchestrated by Airflow.
+
+### (ELT) Pipeline Steps explained
+1. **Extract**: 
+It pulls the Raw Data (OHLCV market data with trade execution metrics) of the Bitcoin Daily Candle Timeframe from Kaggle’s [“Bitcoin Historical Datasets 2018-2025”]([URL-you-want-to-link-to](https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024?select=btc_1d_data_2018_to_2025.csv)), 
+   - **Tool**: Kaggle API (`kagglehub`).
+   - **Action**: Pulls `btc_1d_data_2018_to_2025.csv` daily from Kaggle.
+   - **Output**: Raw CSV uploaded to GCS (`gs://bitcoin-data-bucket-2025/raw/`).
+2. **Load**: 
+The Raw Data which has landed in a Google Cloud Storage bucket will then be loaded into BigQuery (Data Warehouse).
+   - **Tool**: Google Cloud Storage → BigQuery.
+   - **Action**: Loads raw CSV into BigQuery `raw_prices` table (schema autodetected, `WRITE_TRUNCATE`).
+   - **Output**: `final-project-dez2025.crypto_data.raw_prices`.
+3. **Transform**: 
+The Raw Data is then transformed with PySpark to Enhanced Data (Processed Trading Metrics enriched with calculations), and stored in Google BigQuery for trading insights.
+   - **Tool**: PySpark.
+   - **Action**: Computes metrics (`avg_price`, `price_range`, `price_range_pct`, `vwap`) from `raw_prices`, saves to `daily_range`.
+   - **Output**: `final-project-dez2025.crypto_data.daily_range`.
+
+*Why ELT?* Data is loaded raw into BigQuery first (Load), then transformed with PySpark (Transform)—leveraging BigQuery’s storage and Spark’s processing power.
+
+
+
 
 ### Tech Stack
 - **Python**: Core language for scripting and DAG logic.
@@ -35,22 +50,6 @@ The Raw Data is then transformed with PySpark to Enhanced Data (Processed Tradin
 - **PySpark**: Batch processes data into trading metrics.
 - **Kaggle API**: Pulls the latest dataset (`btc_1d_data_2018_to_2025.csv`) via `kagglehub`.
 - **Looker Studio**: Planned dashboard for visualizing price trends and volatility (in progress).
-
-### Pipeline Steps (ELT)
-1. **Extract**: 
-   - **Tool**: Kaggle API (`kagglehub`).
-   - **Action**: Pulls `btc_1d_data_2018_to_2025.csv` daily from Kaggle.
-   - **Output**: Raw CSV uploaded to GCS (`gs://bitcoin-data-bucket-2025/raw/`).
-2. **Load**: 
-   - **Tool**: Google Cloud Storage → BigQuery.
-   - **Action**: Loads raw CSV into BigQuery `raw_prices` table (schema autodetected, `WRITE_TRUNCATE`).
-   - **Output**: `final-project-dez2025.crypto_data.raw_prices`.
-3. **Transform**: 
-   - **Tool**: PySpark.
-   - **Action**: Computes metrics (`avg_price`, `price_range`, `price_range_pct`, `vwap`) from `raw_prices`, saves to `daily_range`.
-   - **Output**: `final-project-dez2025.crypto_data.daily_range`.
-
-*Why ELT?* Data is loaded raw into BigQuery first (Load), then transformed with PySpark (Transform)—leveraging BigQuery’s storage and Spark’s processing power.
 
 ### Setup Instructions
 #### Prerequisites
