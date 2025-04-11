@@ -109,6 +109,6 @@ Terraform-managed infrastructure
 GCS: gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv (daily updated).
 
 BigQuery:
-- raw_prices: Raw candlesticks (~2,648+ rows, growing daily).
+- raw_prices: Raw OHLCV market data with trade execution metrics (~2,648+ rows, growing daily).
 - daily_range: Transformed metrics (date, avg_price, price_range, price_range_pct, vwap).
 
