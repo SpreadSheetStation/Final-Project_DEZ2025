@@ -93,8 +93,9 @@ The Raw Data is then transformed with PySpark to Enhanced Data (Trading Metrics)
 - UI: Watch crypto_pipeline run (pull_kaggle_data → load_to_bigquery → transform_data).
 - Logs: docker logs <scheduler_container_id>.
 
-## Infrastructure
-### Terraform Setup
+
+### Infrastructure
+1. Terraform Setup
    ```bash
    cd terraform
    terraform init
