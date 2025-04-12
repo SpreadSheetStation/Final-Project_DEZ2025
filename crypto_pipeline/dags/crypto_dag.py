@@ -34,7 +34,7 @@ def pull_kaggle_data():
     os.remove(local_file)
 
 def load_to_bigquery():
-    """Loads CSV from GCS to BigQuery raw_prices table."""
+    """Loads CSV from GCS to BigQuery raw_prices table with daily partitioning."""
     logger.info("Starting load_to_bigquery")
     client = bigquery.Client()
     table_id = "final-project-dez2025.crypto_data.raw_prices"
@@ -43,14 +43,18 @@ def load_to_bigquery():
         skip_leading_rows=1,
         autodetect=True,
         write_disposition="WRITE_TRUNCATE",
+        time_partitioning=bigquery.TimePartitioning(
+            type_=bigquery.TimePartitioningType.DAY,
+            field="Open time"  # Partition by daily timestamp
+        )
     )
     uri = "gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv"
     load_job = client.load_table_from_uri(uri, table_id, job_config=job_config)
     load_job.result()
-    logger.info("CSV loaded to BigQuery as raw_prices")
+    logger.info("CSV loaded to BigQuery as raw_prices with daily partitioning")
 
 def transform_data():
-    """Transforms raw_prices to daily_range with PySpark."""
+    """Transforms raw_prices to daily_range with PySpark and daily partitioning."""
     logger.info("Starting transform_data")
     spark = SparkSession.builder \
         .appName("BitcoinTransform") \
@@ -122,10 +126,11 @@ def transform_data():
         df_transformed.write.format("bigquery") \
             .option("table", "final-project-dez2025.crypto_data.daily_range") \
             .option("temporaryGcsBucket", "bitcoin-data-bucket-2025") \
+            .option("partitionField", "date") \
+            .option("partitionType", "DAY") \
             .mode("overwrite") \
             .save()
-        logger.info("Transformed and saved daily_range successfully")
-    
+        logger.info("Transformed and saved daily_range!")
     except Exception as e:
         logger.error(f"Transform failed with error: {str(e)}")
         logger.error(f"Stack trace: {traceback.format_exc()}")
