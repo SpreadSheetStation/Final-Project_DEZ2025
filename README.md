@@ -17,13 +17,13 @@ Built with modern tools like Terraform, Airflow, and Docker, it’s portable, sc
 - **Workflow**: Extract (Kaggle API), Load (GCS/BigQuery), Transform (PySpark) — an **ELT** pipeline orchestrated by Airflow.
 
 ### Problem description
-As a trader with 6+ years experience, I know it can be very confusing to have too much indicators drawn on a single trading chart. Over the years I experienced the concept of "less is more" on my trading charts to be real. Visual over-lays on my candle stick charts can be nice, but can also be very overwhelming, leading to analysis-paralysis. 
+As a trader with 6+ years experience, I know it can be very confusing to have too much indicators drawn on a single trading chart. Over the years I experienced the concept of "less is more" on my trading charts to be real. Visual over-lays on candle stick charts can be nice, but can also be very overwhelming, leading to analysis-paralysis for a lot of traders/investors. 
 
-Also not all Data is always clearly shown on charts and it still requires precision to hover your mouse cursor over certain spots you want to see some actual metric-numbers about. (Volume Bars in TradingView don't even show numbers when I hover my mouse over them!)
+Also not all Data is always clearly shown on charts and it still requires precision to hover your mouse cursor over certain spots you want to see some actual metric-numbers about.
 
 To have all this data neatly organised and presented with a Dashboard gives an advantage by keeping a clear overview when making trade decisions or while backtesting Trades on Bitcoin; without the chance over overwhelming a trader with TOO MANY stacked indicators on a single trading chart.
 
-The majority of traders lose money (which is a commonly known fact). Besides strategy & mindset, the edge isn't in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of price action. On chart indicators are often used in a visual relative way and- with X&Y-axis stretched/compressed to personal preferences -it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers are for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
+The majority of traders lose money (which is a commonly known fact). Besides a well developed strategy & mindset, the winning edge isn't found in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of the price action. On chart indicators are often used in a visual relative way and— with X&Y-axis stretched/compressed to personal preferences —it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers are for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
 
 ### (ELT) Pipeline Steps explained
 1. **Extract**: 

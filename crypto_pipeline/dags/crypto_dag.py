@@ -4,11 +4,13 @@ from datetime import datetime
 from google.cloud import storage
 from google.cloud import bigquery
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, when
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, TimestampType
 import logging
 import kagglehub
 import pandas as pd
 import os
+import traceback
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -63,35 +65,102 @@ def transform_data():
         .config("spark.hadoop.fs.AbstractFileSystem.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS") \
         .getOrCreate()
     logger.info("Spark session created")
-    df = spark.read.format("bigquery") \
-        .option("table", "final-project-dez2025.crypto_data.raw_prices") \
-        .load()
-    logger.info("Data loaded from BigQuery")
-    logger.info(f"Columns in raw_prices: {df.columns}")
+    
     try:
+        # Load raw_prices
+        df = spark.read.format("bigquery") \
+            .option("table", "final-project-dez2025.crypto_data.raw_prices") \
+            .load()
+        logger.info(f"Columns in raw_prices: {df.columns}")
+        
+        # Verify column names
+        expected_columns = ['Open time', 'Open', 'High', 'Low', 'Close']
+        actual_columns = df.columns
+        for col_name in expected_columns:
+            if col_name not in actual_columns:
+                logger.error(f"Column '{col_name}' not found in raw_prices. Available columns: {actual_columns}")
+                raise ValueError(f"Column '{col_name}' not found in raw_prices")
+        
+        # Transformations
         df = df.withColumn("avg_price", (col("Open") + col("Close")) / 2)
         df = df.withColumn("price_range", col("High") - col("Low"))
         df = df.withColumn("price_range_pct", (col("High") - col("Low")) / col("Low") * 100)
         df = df.withColumn("vwap", (col("Open") + col("High") + col("Low") + col("Close")) / 4)
-        df.select("Open time", "avg_price", "price_range", "price_range_pct", "vwap") \
-            .withColumnRenamed("Open time", "date") \
-            .write.format("bigquery") \
+        df = df.withColumn("candle_color", 
+                          when(col("Close") > col("Open"), "Green").otherwise("Red"))
+        df = df.withColumn("volatility_level",
+                          when(col("price_range_pct") < 3, "Low")
+                          .when((col("price_range_pct") >= 3) & (col("price_range_pct") < 7), "Medium")
+                          .otherwise("High"))
+        
+        # Select and rename
+        df_transformed = df.select(
+            col("Open time").cast("TIMESTAMP").alias("date"),
+            col("avg_price").cast("DOUBLE"),
+            col("price_range").cast("DOUBLE"),
+            col("price_range_pct").cast("DOUBLE"),
+            col("vwap").cast("DOUBLE"),
+            col("candle_color").cast("STRING"),
+            col("volatility_level").cast("STRING")
+        )
+        
+        # Define explicit schema
+        schema = StructType([
+            StructField("date", TimestampType(), False),
+            StructField("avg_price", DoubleType(), False),
+            StructField("price_range", DoubleType(), False),
+            StructField("price_range_pct", DoubleType(), False),
+            StructField("vwap", DoubleType(), False),
+            StructField("candle_color", StringType(), False),
+            StructField("volatility_level", StringType(), False)
+        ])
+        
+        # Apply schema
+        df_transformed = spark.createDataFrame(df_transformed.rdd, schema)
+        
+        # Write to BigQuery (no partitioning/clustering for now)
+        df_transformed.write.format("bigquery") \
             .option("table", "final-project-dez2025.crypto_data.daily_range") \
             .option("temporaryGcsBucket", "bitcoin-data-bucket-2025") \
             .mode("overwrite") \
             .save()
-        logger.info("Transformed and saved daily_range!")
+        logger.info("Transformed and saved daily_range successfully")
+    
     except Exception as e:
-        logger.error(f"Transform failed: {str(e)}")
+        logger.error(f"Transform failed with error: {str(e)}")
+        logger.error(f"Stack trace: {traceback.format_exc()}")
         raise
-    spark.stop()
+    
+    finally:
+        spark.stop()
+
+def partition_cluster_data():
+    """Creates a partitioned and clustered daily_range_partitioned table in BigQuery."""
+    logger.info("Starting partition_cluster_data")
+    client = bigquery.Client()
+    try:
+        # SQL to create partitioned/clustered table
+        query = """
+        CREATE OR REPLACE TABLE `final-project-dez2025.crypto_data.daily_range_partitioned`
+        PARTITION BY DATE(date)
+        CLUSTER BY volatility_level
+        AS
+        SELECT * 
+        FROM `final-project-dez2025.crypto_data.daily_range`
+        """
+        query_job = client.query(query)
+        query_job.result()  # Wait for completion
+        logger.info("Created daily_range_partitioned with date partitioning and volatility_level clustering")
+    except Exception as e:
+        logger.error(f"Partitioning/clustering failed with error: {str(e)}")
+        raise
 
 with DAG(
     "crypto_pipeline",
     start_date=datetime(2025, 3, 30),
     schedule_interval="@daily",
     catchup=False,
-    description="Pipeline to pull Bitcoin daily candlesticks from Kaggle, load to BigQuery, and transform with PySpark",
+    description="Pipeline to pull Bitcoin daily candlesticks from Kaggle, load to BigQuery, transform with PySpark, and partition/cluster with BigQuery",
 ) as dag:
     pull_task = PythonOperator(
         task_id="pull_kaggle_data",
@@ -105,4 +174,8 @@ with DAG(
         task_id="transform_data",
         python_callable=transform_data,
     )
-    pull_task >> load_bq_task >> transform_task
+    partition_cluster_task = PythonOperator(
+        task_id="partition_cluster_data",
+        python_callable=partition_cluster_data,
+    )
+    pull_task >> load_bq_task >> transform_task >> partition_cluster_task
