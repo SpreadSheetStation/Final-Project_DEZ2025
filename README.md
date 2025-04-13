@@ -29,7 +29,7 @@ Built with modern tools like Terraform, Airflow, and Docker, it’s portable, sc
 As a trader with 6+ years experience, I know it can be very confusing to have too much indicators drawn on a single trading chart. Over the years I experienced the concept of "less is more" on my trading charts to be real. Visual over-lays on candle stick charts can be nice, but can also be very overwhelming, leading to analysis-paralysis for a lot of traders/investors. 
 
 ![overloaded tradingchart](./Images/stacked_indicators_tradingchart.png) 
-[An example of a trading chart with an overload of visual over-lays (indicators)]
+_[An example of a trading chart with an overload of visual over-lays (indicators)]_
 
 Also not all Data is always clearly shown on trading charts and it still requires precision to hover your mouse cursor over certain spots you want to see some actual metric-numbers about.
 
@@ -167,7 +167,7 @@ This pipeline offers exciting potential for future enhancements to support advan
 These possibilities leverage the pipeline’s flexible cloud architecture (GCP, Airflow) and clean data, setting the stage for scalable exploration as trading needs evolve.
 
 ## Other Screenshots
-![ALL GREEN: Airflow](./Images/Airflow.png)  
-![BigQuery](./Images/BigQuery.png)  
-![GCP](./Images/GCPbucket.png)  
+[ALL GREEN: Airflow](./Images/Airflow.png)  
+[BigQuery](./Images/BigQuery.png)  
+[GCP](./Images/GCPbucket.png)  
 
