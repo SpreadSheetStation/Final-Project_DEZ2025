@@ -82,7 +82,7 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
   - **Google BigQuery**: Data warehouse for raw (`raw_prices`) and transformed (`daily_range_partitioned`) tables.
 - **PySpark**: Batch processes data into trading metrics.
 - **Kaggle API**: Pulls the latest dataset (`btc_1d_data_2018_to_2025.csv`) via `kagglehub`.
-- **Looker Studio**: Planned dashboard for visualizing price trends and volatility (in progress).
+- **Looker Studio**: Dashboard for visualizing price trends and volatility.
 
 ### Setup Instructions
 #### Prerequisites
@@ -118,7 +118,7 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 
 4. **Trigger Pipeline**:
     ```bash
-    docker exec <scheduler_container_id> airflow dags trigger crypto_pipeline```
+    docker exec <scheduler_container_id> airflow dags trigger crypto_pipeline
 
 - Find <scheduler_container_id> with docker ps (e.g. final-project_dez2025-airflow-scheduler-1).
 
@@ -134,3 +134,7 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
   - `daily_range`: Transformed metrics (`date`, `avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`).
   - `daily_range_partitioned`: Optimized for trading analysis, partitioned by `DATE(date)` and clustered by `volatility_level`—primary table for dashboard and queries.
 
+## Dashboard
+A Looker Studio dashboard visualizes Bitcoin trading metrics from `daily_range_partitioned`:
+- **Access**: View [here](https://lookerstudio.google.com/reporting/2605b1fe-d7cd-48c0-87df-a038c8db0473)
+- **Screenshot**: <img src="./Images/Looker.png" alt="Looker_Dashboard">
