@@ -3,16 +3,22 @@ Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 
 ## Table of Contents
 - [Project Introduction](#project-introduction)
+- [Project Overview](#project-overview)
 - [Problem Description](#problem-description)
 - [Tech Stack](#tech-stack)
-
+- [(ELT) Pipeline Steps](#(elt)-pipeline-steps)
+- [Data Warehouse](#data-warehouse)
+- [Partitioning and Clustering](#partitioning-and-clustering)
+- [Tech Stack](#tech-stack)
+- [Setup Instructions](#setup-instructions)
+- [Outputs](#outputs)
 
 ### Project Introduction
 This project delivers a fully automated, Dockerized data pipeline to analyze Bitcoin trading data from 2018 to present (updated daily as of April 2025).
 Built with modern tools like Terraform, Airflow, and Docker, it’s portable, scalable, and ready for actionable trading metrics from daily candlesticks for Long-term Investing, Trading and Backtesting of Bitcoin.
 
 ### Project Overview
-- **Goal**: Help investors understand Bitcoin price volatility and trading activity with metrics like average price, price range, and VWAP.
+- **Goal**: Help investors understand Bitcoin price volatility and trading activity with metrics like average price, price range, VWAP, candle color, volatility level.
 - **Data**: Daily candlesticks (2018-2025) from Kaggle, updated daily via Binance API.
 - **Workflow**: Extract (Kaggle API), Load (GCS/BigQuery), Transform (PySpark) — an **ELT** pipeline orchestrated by Airflow.
 
@@ -25,7 +31,7 @@ To have all this data neatly organised and presented with a Dashboard gives an a
 
 The majority of traders lose money (which is a commonly known fact). Besides a well developed strategy & mindset, the winning edge isn't found in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of the price action. On chart indicators are often used in a visual relative way and— with X&Y-axis stretched/compressed to personal preferences —it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers are for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
 
-### (ELT) Pipeline Steps explained
+### (ELT) Pipeline Steps
 1. **Extract**: 
 It pulls the Raw Data (OHLCV market data with trade execution metrics) of the Bitcoin Daily Candle Timeframe from Kaggle’s [“Bitcoin Historical Datasets 2018-2025”](https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024?select=btc_1d_data_2018_to_2025.csv), 
    - **Tool**: Kaggle API (`kagglehub`).
@@ -39,13 +45,28 @@ The Raw Data which has landed in a Google Cloud Storage bucket will then be load
 3. **Transform**: 
 The Raw Data is then transformed with PySpark to Enhanced Data (Trading Metrics), and stored in Google BigQuery for trading insights.
    - **Tool**: PySpark.
-   - **Action**: Computes metrics (`avg_price`, `price_range`, `price_range_pct`, `vwap`) from `raw_prices`, saves to `daily_range`.
-   - **Output**: `final-project-dez2025.crypto_data.daily_range`.
+   - **Action**: Computes metrics (`avg_price`, `price_range`, `price_range_pct`, `vwap`) from `raw_prices`, saves to `daily_range` which is then partitioned and clustered into (`daily_range_partitioned`).
+   - **Output**: `final-project-dez2025.crypto_data.daily_range_partitioned`.
 
 *Why ELT?* Data is loaded raw into BigQuery first (Load), then transformed with PySpark (Transform)—leveraging BigQuery’s storage and Spark’s processing power.
 
+### Data Warehouse
+The pipeline uses **Google BigQuery** as the data warehouse, storing data in three tables under `final-project-dez2025.crypto_data`:
+- **`raw_prices`**: Raw Bitcoin candlesticks (~2,648+ rows, growing daily), unpartitioned to preserve original data integrity.
+- **`daily_range`**: Intermediate table with trading metrics (`date`, `avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`), unpartitioned for flexibility during transformation.
+- **`daily_range_partitioned`**: Optimized table for trading analysis, partitioned by `DATE(date)` (daily) and clustered by `volatility_level` (Low/Medium/High).
 
+### Partitioning and Clustering
+- **Partitioning by `DATE(date)`**:
+  - **Why**: Bitcoin candlestick data is naturally daily, with one row per day representing a single candlestick. Partitioning by `DATE(date)` creates one partition per day, aligning perfectly with trading queries like “metrics for a specific date” (e.g., April 11, 2025) or date ranges (e.g., Q1 2025 trends). This ensures BigQuery scans only the relevant partitions, boosting performance for time-series analysis critical to swing traders.
+  - **Why One Row per Partition**: With daily data, each partition holds one row by design, which is optimal for precision queries (e.g., “volatility on a single day”) and scales efficiently as new days are added. This avoids overcomplicating the schema with coarser partitions (e.g., monthly) that would mix unrelated days, reducing query specificity for traders.
+  - **Benefit**: Fast filtering for dashboard visuals (e.g., `avg_price` trends) and backtesting (e.g., “Green days in 2025”).
 
+- **Clustering by `volatility_level`**:
+  - **Why**: `volatility_level` (Low: <3%, Medium: 3-7%, High: ≥7% `price_range_pct`) categorizes days by price movement intensity, a key trading signal. Clustering groups rows within each partition by volatility, speeding up queries like “high-volatility Green days” or “low-volatility trends in April 2025.”
+  - **Benefit**: Enhances performance for dashboard filters and trading strategies focusing on volatility-driven decisions, such as identifying breakout opportunities.
+
+This setup optimizes queries for my trading dashboard (e.g., “show `price_range_pct` for high-volatility days in 2025”) and ensures scalability as the dataset grows daily. Partitioning by date leverages the data’s natural structure, while clustering by volatility aligns with trader priorities, making `daily_range_partitioned` the go-to table for analysis.
 
 ### Tech Stack
 - **Python**: Core language for scripting and DAG logic.
@@ -55,7 +76,7 @@ The Raw Data is then transformed with PySpark to Enhanced Data (Trading Metrics)
 - **Terraform**: Provisions Google Cloud infrastructure (GCS bucket, BigQuery dataset).
 - **Google Cloud Platform (GCP)**:
   - **Google Cloud Storage (GCS)**: Stores raw CSV data (`gs://bitcoin-data-bucket-2025/raw/`).
-  - **Google BigQuery**: Data warehouse for raw (`raw_prices`) and transformed (`daily_range`) tables.
+  - **Google BigQuery**: Data warehouse for raw (`raw_prices`) and transformed (`daily_range_partitioned`) tables.
 - **PySpark**: Batch processes data into trading metrics.
 - **Kaggle API**: Pulls the latest dataset (`btc_1d_data_2018_to_2025.csv`) via `kagglehub`.
 - **Looker Studio**: Planned dashboard for visualizing price trends and volatility (in progress).
@@ -110,5 +131,6 @@ GCS: gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv (daily updat
 
 BigQuery:
 - raw_prices: Raw OHLCV market data with trade execution metrics (~2,648+ rows, growing daily).
-- daily_range: Transformed metrics (date, avg_price, price_range, price_range_pct, vwap).
+- daily_range: Transformed metrics (date, avg_price, price_range, price_range_pct, vwap, candle_color, volatility_level).
+- daily_range_partitioned: daily_range dataset partitioned by `DATE(date)` and clustered by `volatility_level`.
 
