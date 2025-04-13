@@ -6,7 +6,7 @@ Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 - [Project Overview](#project-overview)
 - [Problem Description](#problem-description)
 - [Tech Stack](#tech-stack)
-- [(ELT) Pipeline Steps](#(elt)-pipeline-steps)
+- [(ELT) Pipeline Steps](#elt-pipeline-steps)
 - [Data Warehouse](#data-warehouse)
 - [Partitioning and Clustering](#partitioning-and-clustering)
 - [Tech Stack](#tech-stack)
@@ -115,7 +115,7 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 - Logs: docker logs <scheduler_container_id>.
 
 
-### Infrastructure
+#### Infrastructure
 1. Terraform Setup
    ```bash
    cd terraform
