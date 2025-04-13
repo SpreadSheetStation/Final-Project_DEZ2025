@@ -102,7 +102,7 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 #### Run It
 1. **Clone the Repo**:
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/SpreadSheetStation/Final-Project_DEZ2025.git
    cd Final-Project_DEZ2025
 
 2. **Start Docker**:
