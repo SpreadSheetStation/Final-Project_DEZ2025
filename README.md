@@ -31,7 +31,7 @@ To have all this data neatly organised and presented with a Dashboard gives an a
 Most traders face losses, highlighting the need for clear, organized data over cluttered chart indicators. Besides a well developed strategy & mindset, the winning edge isn't found in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of the price action. On chart indicators are often used in a visual relative way and— with X&Y-axis stretched/compressed to personal preferences —it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers are for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
 
 ### (ELT) Pipeline Steps
-<img src="./Images/sss_drawio.png" alt="drawio">
+<img src="./Images/sst_drawio.png" alt="drawio">
 1. **Extract**: 
 It pulls the Raw Data (OHLCV market data with trade execution metrics) of the Bitcoin Daily Candle Timeframe from Kaggle’s [“Bitcoin Historical Datasets 2018-2025”](https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024?select=btc_1d_data_2018_to_2025.csv), 
    - **Tool**: Kaggle API (`kagglehub`).
@@ -138,4 +138,5 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 ## Dashboard
 A Looker Studio dashboard visualizes Bitcoin trading metrics from `daily_range_partitioned`:
 - **Access**: View [here](https://lookerstudio.google.com/reporting/2605b1fe-d7cd-48c0-87df-a038c8db0473)
-- **Screenshot**: <img src="./Images/Looker2.png" alt="Looker_Dashboard">
+- **Screenshot**:
+<img src="./Images/Looker2.png" alt="Looker_Dashboard">
