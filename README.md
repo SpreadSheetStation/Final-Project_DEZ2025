@@ -11,6 +11,10 @@ Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 - [Partitioning and Clustering](#partitioning-and-clustering)
 - [Setup Instructions](#setup-instructions)
 - [Outputs](#outputs)
+- [Conclusion](#conclusion)
+- [Dashboard](#dashboard)
+- [Future Scalability](#future-scalability)
+- [Other Screenshots](#other-screenshots)
 
 ### Project Introduction
 This project delivers a fully automated, Dockerized data pipeline to analyze Bitcoin trading data from 2018 to present (updated daily as of April 2025).
@@ -24,11 +28,11 @@ Built with modern tools like Terraform, Airflow, and Docker, it’s portable, sc
 ### Problem description
 As a trader with 6+ years experience, I know it can be very confusing to have too much indicators drawn on a single trading chart. Over the years I experienced the concept of "less is more" on my trading charts to be real. Visual over-lays on candle stick charts can be nice, but can also be very overwhelming, leading to analysis-paralysis for a lot of traders/investors. 
 
-Also not all Data is always clearly shown on charts and it still requires precision to hover your mouse cursor over certain spots you want to see some actual metric-numbers about.
+Also not all Data is always clearly shown on trading charts and it still requires precision to hover your mouse cursor over certain spots you want to see some actual metric-numbers about.
 
-To have all this data neatly organised and presented with a Dashboard gives an advantage by keeping a clear overview when making trade decisions or while backtesting Trades on Bitcoin; without the chance over overwhelming a trader with TOO MANY stacked indicators on a single trading chart.
+To have all this data neatly organised and presented with a Dashboard gives an advantage by keeping a clear overview when making trade decisions or while backtesting Trades on Bitcoin; without the chance of over overwhelming a trader with TOO MANY stacked indicators on a single trading chart.
 
-Most traders face losses, highlighting the need for clear, organized data over cluttered chart indicators. Besides a well developed strategy & mindset, the winning edge isn't found in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of the price action. On chart indicators are often used in a visual relative way and— with X&Y-axis stretched/compressed to personal preferences —it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers are for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
+Most traders face losses, highlighting the need for clear, organized data over cluttered chart indicators. Besides a well developed strategy & mindset, the winning edge isn't found in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of the price action. On chart indicators are often used in a visual relative way and— with X&Y-axis stretched/compressed to personal preferences —it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers can be beneficial for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders/investors who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
 
 ### (ELT) Pipeline Steps
 <img src="./Images/sst_drawio.png" alt="drawio">
@@ -135,8 +139,31 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
   - `daily_range`: Transformed metrics (`date`, `avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`).
   - `daily_range_partitioned`: Optimized for trading analysis, partitioned by `DATE(date)` and clustered by `volatility_level`—primary table for dashboard and queries.
 
+## Conclusion
+This Bitcoin Trading Data Pipeline fulfills all Data Engineering Zoomcamp 2025 criteria:
+- **Problem Description**: Addresses trader overwhelm with clear, organized metrics for swing trading.
+- **Cloud**: Leverages GCP (GCS, BigQuery) with Terraform for IaC.
+- **Data Ingestion**: Fully automated Airflow DAG pulls Kaggle data to GCS and BigQuery.
+- **Data Warehouse**: BigQuery tables (`raw_prices`, `daily_range`, `daily_range_partitioned`) are optimized with daily partitioning and volatility clustering.
+- **Transformations**: PySpark computes trading metrics (`avg_price`, `vwap`, etc.).
+- **Dashboard**: Looker Studio visualizes volatility distribution and price trends.
+- **Reproducibility**: Detailed setup instructions ensure portability via Docker and Terraform.
+Built with Python, Airflow, Docker, PostgreSQL, and Looker Studio, this scalable pipeline delivers actionable insights for Bitcoin traders, ready for future enhancements like trading bots or data science.
+
 ## Dashboard
 A Looker Studio dashboard visualizes Bitcoin trading metrics from `daily_range_partitioned`:
 - **Access**: View [here](https://lookerstudio.google.com/reporting/2605b1fe-d7cd-48c0-87df-a038c8db0473)
 - **Screenshot**:
 <img src="./Images/Looker2.png" alt="Looker_Dashboard">
+
+## Future Scalability
+This pipeline offers exciting potential for future enhancements to support advanced trading workflows:
+- **Intraday Data**: Adding 4-hour or 1-hour candlesticks (e.g., via Binance API) could provide finer market insights, enabling day trading strategies and richer datasets for analysis.
+- **Trading Bots**: Daily or intraday data in `daily_range_partitioned` (e.g., `candle_color`, `volatility_level`) could feed automated trading bots. For example, a bot might buy on “Green, High-volatility” periods, enhancing real-time swing or day trading.
+- **Data Science**: Metrics like `avg_price`, `price_range_pct`, and `vwap`, especially with intraday granularity, could fuel predictive models (e.g., price trend forecasting) or pattern analysis (e.g., volatility clustering), unlocking deeper trading insights.
+These possibilities leverage the pipeline’s flexible cloud architecture (GCP, Airflow) and clean data, setting the stage for scalable exploration as trading needs evolve.
+
+## Other Screenshots
+[ALL GREEN: Airflow]([https://lookerstudio.google.com/reporting/2605b1fe-d7cd-48c0-87df-a038c8db0473](https://github.com/SpreadSheetStation/Final-Project_DEZ2025/blob/main/Images/Airflow.png))
+[BigQuery]([https://lookerstudio.google.com/reporting/2605b1fe-d7cd-48c0-87df-a038c8db0473](https://github.com/SpreadSheetStation/Final-Project_DEZ2025/blob/main/Images/BigQuery.png))
+[GCP]([https://lookerstudio.google.com/reporting/2605b1fe-d7cd-48c0-87df-a038c8db0473](https://github.com/SpreadSheetStation/Final-Project_DEZ2025/blob/main/Images/GCPbucket.png))
