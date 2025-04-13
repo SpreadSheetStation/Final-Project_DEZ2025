@@ -9,7 +9,6 @@ Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 - [(ELT) Pipeline Steps](#elt-pipeline-steps)
 - [Data Warehouse](#data-warehouse)
 - [Partitioning and Clustering](#partitioning-and-clustering)
-- [Tech Stack](#tech-stack)
 - [Setup Instructions](#setup-instructions)
 - [Outputs](#outputs)
 
@@ -29,7 +28,7 @@ Also not all Data is always clearly shown on charts and it still requires precis
 
 To have all this data neatly organised and presented with a Dashboard gives an advantage by keeping a clear overview when making trade decisions or while backtesting Trades on Bitcoin; without the chance over overwhelming a trader with TOO MANY stacked indicators on a single trading chart.
 
-The majority of traders lose money (which is a commonly known fact). Besides a well developed strategy & mindset, the winning edge isn't found in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of the price action. On chart indicators are often used in a visual relative way and— with X&Y-axis stretched/compressed to personal preferences —it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers are for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
+Most traders face losses, highlighting the need for clear, organized data over cluttered chart indicators. Besides a well developed strategy & mindset, the winning edge isn't found in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of the price action. On chart indicators are often used in a visual relative way and— with X&Y-axis stretched/compressed to personal preferences —it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers are for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
 
 ### (ELT) Pipeline Steps
 1. **Extract**: 
@@ -45,7 +44,11 @@ The Raw Data which has landed in a Google Cloud Storage bucket will then be load
 3. **Transform**: 
 The Raw Data is then transformed with PySpark to Enhanced Data (Trading Metrics), and stored in Google BigQuery for trading insights.
    - **Tool**: PySpark.
-   - **Action**: Computes metrics (`avg_price`, `price_range`, `price_range_pct`, `vwap`) from `raw_prices`, saves to `daily_range` which is then partitioned and clustered into (`daily_range_partitioned`).
+   - **Action**: Computes metrics (`avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`) from `raw_prices`, saves to `daily_range`.
+   - **Output**: `final-project-dez2025.crypto_data.daily_range`.
+4. **Partition and Cluster**:
+   - **Tool**: BigQuery.
+   - **Action**: Creates `daily_range_partitioned` from `daily_range`, partitioned by `DATE(date)` and clustered by `volatility_level`.
    - **Output**: `final-project-dez2025.crypto_data.daily_range_partitioned`.
 
 *Why ELT?* Data is loaded raw into BigQuery first (Load), then transformed with PySpark (Transform)—leveraging BigQuery’s storage and Spark’s processing power.
@@ -87,15 +90,24 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 - Git
 - Google Cloud credentials (`final-project-creds.json`) — Ensure it has GCS and BigQuery permissions.
 
+#### Infrastructure
+1. Terraform Setup
+   ```bash
+   cd terraform
+   terraform init
+   terraform apply
+
+- Creates bitcoin-data-bucket-2025 (GCS) and final-project-dez2025.crypto_data (BigQuery).
+
 #### Run It
 1. **Clone the Repo**:
    ```bash
    git clone <your-repo-url>
-   cd Final-Project_DEZ2025```
+   cd Final-Project_DEZ2025
 
 2. **Start Docker**:
     ```bash
-    docker-compose up -d --build```
+    docker-compose up -d --build
 
 - Builds bitcoin-pipeline-airflow:latest.
 - Starts Postgres, Airflow webserver, scheduler, and initializes the DB.
@@ -111,26 +123,14 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 - Find <scheduler_container_id> with docker ps (e.g. final-project_dez2025-airflow-scheduler-1).
 
 5. **Monitor**:
-- UI: Watch crypto_pipeline run (pull_kaggle_data → load_to_bigquery → transform_data).
+- UI: Watch `crypto_pipeline` run (`pull_kaggle_data` → `load_to_bigquery` → `transform_data` → `partition_cluster_data`).
 - Logs: docker logs <scheduler_container_id>.
 
-
-#### Infrastructure
-1. Terraform Setup
-   ```bash
-   cd terraform
-   terraform init
-   terraform apply
-
-- Creates bitcoin-data-bucket-2025 (GCS) and final-project-dez2025.crypto_data (BigQuery).
-
 ## Outputs
-Terraform-managed infrastructure
-
-GCS: gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv (daily updated).
-
-BigQuery:
-- raw_prices: Raw OHLCV market data with trade execution metrics (~2,648+ rows, growing daily).
-- daily_range: Transformed metrics (date, avg_price, price_range, price_range_pct, vwap, candle_color, volatility_level).
-- daily_range_partitioned: daily_range dataset partitioned by `DATE(date)` and clustered by `volatility_level`.
+- **Infrastructure**: Terraform-managed GCS bucket (`bitcoin-data-bucket-2025`) and BigQuery dataset (`final-project-dez2025.crypto_data`).
+- **GCS**: `gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv` (daily updated).
+- **BigQuery**:
+  - `raw_prices`: Raw OHLCV market data with trade execution metrics (~2,648+ rows, growing daily).
+  - `daily_range`: Transformed metrics (`date`, `avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`).
+  - `daily_range_partitioned`: Optimized for trading analysis, partitioned by `DATE(date)` and clustered by `volatility_level`—primary table for dashboard and queries.
 
