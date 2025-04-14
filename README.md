@@ -1,5 +1,6 @@
 # Bitcoin Trading Data Pipeline ( Final-Project_DEZ2025 ) 
 Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
+For direct proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
 
 ## Table of Contents
 - [Project Introduction](#project-introduction)
@@ -19,8 +20,6 @@ Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 ### Project Introduction
 This project delivers a fully automated, Dockerized data pipeline to analyze Bitcoin trading data from 2018 to present (updated daily as of April 2025).
 Built with modern tools like Terraform, Airflow, and Docker, it’s portable, scalable, and ready for actionable trading metrics from daily candlesticks for Long-term Investing, Trading and Backtesting of Bitcoin.
-
-For direct proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
 
 ### Project Overview
 - **Goal**: Help traders and investors comprehend Bitcoin price volatility and trading activity with metrics like average price, price range, VWAP, candle color, volatility level.
