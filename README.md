@@ -14,11 +14,13 @@ Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 - [Conclusion](#conclusion)
 - [Dashboard](#dashboard)
 - [Future Scalability](#future-scalability)
-- [Other Screenshots](#other-screenshots)
+- [Other Screenshots & Videos](#other-screenshots-videos)
 
 ### Project Introduction
 This project delivers a fully automated, Dockerized data pipeline to analyze Bitcoin trading data from 2018 to present (updated daily as of April 2025).
 Built with modern tools like Terraform, Airflow, and Docker, it’s portable, scalable, and ready for actionable trading metrics from daily candlesticks for Long-term Investing, Trading and Backtesting of Bitcoin.
+
+For direct proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
 
 ### Project Overview
 - **Goal**: Help traders and investors comprehend Bitcoin price volatility and trading activity with metrics like average price, price range, VWAP, candle color, volatility level.
@@ -166,7 +168,12 @@ This pipeline offers exciting potential for future enhancements to support advan
 - **Data Science**: Metrics like `avg_price`, `price_range_pct`, and `vwap`, especially with intraday granularity, could fuel predictive models (e.g., price trend forecasting) or pattern analysis (e.g., volatility clustering), unlocking deeper trading insights.
 These possibilities leverage the pipeline’s flexible cloud architecture (GCP, Airflow) and clean data, setting the stage for scalable exploration as trading needs evolve.
 
-## Other Screenshots
+## Other Screenshots Videos
+Videos (Proof of a Green working Pipeline):
+https://www.youtube.com/watch?v=F5i35GIHSQA
+https://www.youtube.com/watch?v=9RP63lYncVk
+
+Screenshots:
 [ALL GREEN: Airflow](./Images/Airflow.png)  
 [BigQuery](./Images/BigQuery.png)  
 [GCP](./Images/GCPbucket.png)  
