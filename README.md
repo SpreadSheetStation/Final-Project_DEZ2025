@@ -1,5 +1,6 @@
 # Bitcoin Trading Data Pipeline ( Final-Project_DEZ2025 ) 
 Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
+
 For direct proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
 
 ## Table of Contents
