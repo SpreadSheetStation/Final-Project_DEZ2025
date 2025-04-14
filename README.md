@@ -170,11 +170,11 @@ These possibilities leverage the pipeline’s flexible cloud architecture (GCP, 
 
 ## Other Screenshots Videos
 Videos (Proof of a Green working Pipeline):
-https://www.youtube.com/watch?v=F5i35GIHSQA
-https://www.youtube.com/watch?v=9RP63lYncVk
+- https://www.youtube.com/watch?v=F5i35GIHSQA
+- https://www.youtube.com/watch?v=9RP63lYncVk
 
 Screenshots:
-[ALL GREEN: Airflow](./Images/Airflow.png)  
-[BigQuery](./Images/BigQuery.png)  
-[GCP](./Images/GCPbucket.png)  
+- [ALL GREEN: Airflow](./Images/Airflow.png)  
+- [BigQuery](./Images/BigQuery.png)  
+- [GCP](./Images/GCPbucket.png)  
 
