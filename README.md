@@ -98,6 +98,7 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 #### Prerequisites
 - Docker & Docker Compose
 - Git
+- Terraform
 - Google Cloud credentials (`final-project-creds.json`) — Place in project root and ensure it has GCS and BigQuery permissions.
 - A `terraform.tfvars` file (see `terraform.tfvars.example` for template).
 - Environment variables: `GCS_BUCKET_NAME`, `GCP_PROJECT_ID`, `BQ_DATASET_NAME`
