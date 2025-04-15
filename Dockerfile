@@ -32,6 +32,5 @@ RUN curl -L -o /home/airflow/spark-jars/spark-bigquery-with-dependencies_2.12-0.
 ENV AIRFLOW_HOME=/opt/airflow
 
 COPY crypto_pipeline/dags/ /opt/airflow/dags/
-COPY terraform/final-project-creds.json /opt/airflow/final-project-creds.json
 
 ENV GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/final-project-creds.json

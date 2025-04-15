@@ -1,0 +1,11 @@
+# Path to your GCP service account key JSON file
+credentials = "./path/to/your-service-account-key.json"
+
+# Your GCP project ID
+project = "your-gcp-project-id"
+
+# Globally unique GCS bucket name
+gcs_bucket_name = "your-unique-bucket-name-2025"
+
+# BigQuery dataset name
+bq_dataset_name = "crypto_data"

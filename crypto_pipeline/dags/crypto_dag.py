@@ -27,7 +27,7 @@ def pull_kaggle_data():
     df.to_csv(local_file, index=False)
     logger.info(f"Dataset pulled and saved to {local_file}")
     client = storage.Client()
-    bucket = client.get_bucket("bitcoin-data-bucket-2025")
+    bucket = client.get_bucket(os.getenv("GCS_BUCKET_NAME", "bitcoin-data-bucket-2025"))
     blob = bucket.blob("raw/btc_1d_data_2018_to_2025.csv")
     blob.upload_from_filename(local_file)
     logger.info("Uploaded to GCS!")
@@ -37,14 +37,16 @@ def load_to_bigquery():
     """Loads CSV from GCS to BigQuery raw_prices table."""
     logger.info("Starting load_to_bigquery")
     client = bigquery.Client()
-    table_id = "final-project-dez2025.crypto_data.raw_prices"
+    project = os.getenv("GCP_PROJECT_ID", "final-project-dez2025")
+    dataset = os.getenv("BQ_DATASET_NAME", "crypto_data")
+    table_id = f"{project}.{dataset}.raw_prices"
     job_config = bigquery.LoadJobConfig(
         source_format=bigquery.SourceFormat.CSV,
         skip_leading_rows=1,
         autodetect=True,
         write_disposition="WRITE_TRUNCATE",
     )
-    uri = "gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv"
+    uri = f"gs://{os.getenv('GCS_BUCKET_NAME', 'bitcoin-data-bucket-2025')}/raw/btc_1d_data_2018_to_2025.csv"
     load_job = client.load_table_from_uri(uri, table_id, job_config=job_config)
     load_job.result()
     logger.info("CSV loaded to BigQuery as raw_prices")
@@ -68,8 +70,10 @@ def transform_data():
     
     try:
         # Load raw_prices
+        project = os.getenv("GCP_PROJECT_ID", "final-project-dez2025")
+        dataset = os.getenv("BQ_DATASET_NAME", "crypto_data")
         df = spark.read.format("bigquery") \
-            .option("table", "final-project-dez2025.crypto_data.raw_prices") \
+            .option("table", f"{project}.{dataset}.raw_prices") \
             .load()
         logger.info(f"Columns in raw_prices: {df.columns}")
         
@@ -118,10 +122,10 @@ def transform_data():
         # Apply schema
         df_transformed = spark.createDataFrame(df_transformed.rdd, schema)
         
-        # Write to BigQuery (no partitioning/clustering for now)
+        # Write to BigQuery
         df_transformed.write.format("bigquery") \
-            .option("table", "final-project-dez2025.crypto_data.daily_range") \
-            .option("temporaryGcsBucket", "bitcoin-data-bucket-2025") \
+            .option("table", f"{project}.{dataset}.daily_range") \
+            .option("temporaryGcsBucket", os.getenv("GCS_BUCKET_NAME", "bitcoin-data-bucket-2025")) \
             .mode("overwrite") \
             .save()
         logger.info("Transformed and saved daily_range successfully")
@@ -140,16 +144,18 @@ def partition_cluster_data():
     client = bigquery.Client()
     try:
         # SQL to create partitioned/clustered table
-        query = """
-        CREATE OR REPLACE TABLE `final-project-dez2025.crypto_data.daily_range_partitioned`
+        project = os.getenv("GCP_PROJECT_ID", "final-project-dez2025")
+        dataset = os.getenv("BQ_DATASET_NAME", "crypto_data")
+        query = f"""
+        CREATE OR REPLACE TABLE `{project}.{dataset}.daily_range_partitioned`
         PARTITION BY DATE(date)
         CLUSTER BY volatility_level
         AS
         SELECT * 
-        FROM `final-project-dez2025.crypto_data.daily_range`
+        FROM `{project}.{dataset}.daily_range`
         """
         query_job = client.query(query)
-        query_job.result()  # Wait for completion
+        query_job.result()
         logger.info("Created daily_range_partitioned with date partitioning and volatility_level clustering")
     except Exception as e:
         logger.error(f"Partitioning/clustering failed with error: {str(e)}")
