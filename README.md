@@ -98,41 +98,64 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 #### Prerequisites
 - Docker & Docker Compose
 - Git
-- Google Cloud credentials (`final-project-creds.json`) — Ensure it has GCS and BigQuery permissions.
+- Google Cloud credentials (`final-project-creds.json`) — Place in project root and ensure it has GCS and BigQuery permissions.
+- A `terraform.tfvars` file (see `terraform.tfvars.example` for template).
+- Environment variables: `GCS_BUCKET_NAME`, `GCP_PROJECT_ID`, `BQ_DATASET_NAME`
 
-#### Infrastructure
-1. Terraform Setup
-   ```bash
-   cd terraform
-   terraform init
-   terraform apply
-
-- Creates bitcoin-data-bucket-2025 (GCS) and final-project-dez2025.crypto_data (BigQuery).
-
-#### Run It
+#### Let's start!
 1. **Clone the Repo**:
    ```bash
    git clone https://github.com/SpreadSheetStation/Final-Project_DEZ2025.git
    cd Final-Project_DEZ2025
 
-2. **Start Docker**:
+#### Infrastructure
+1. **Prepare Terraform Variables**:
+   - Copy `terraform.tfvars.example` to `terraform.tfvars`:
+     ```bash
+     cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+     ```
+   - Edit `terraform.tfvars` with your GCP project ID, a unique bucket name, dataset name, and credentials path:
+     ```
+     credentials     = "./final-project-creds.json"
+     project         = "your-gcp-project-id"
+     gcs_bucket_name = "your-unique-bucket-name-2025"
+     bq_dataset_name = "crypto_data"
+     ```
+2. **Prepare GCP Credentials**:
+   - Place your service account key as `final-project-creds.json` in the project root.
+3. **Apply Terraform**:
+   ```bash
+   cd terraform
+   terraform init
+   terraform apply
+
+- Creates your GCS bucket and BigQuery dataset.
+
+4. **Set Environment Variables**:
+   ```bash
+   export GCS_BUCKET_NAME="your-unique-bucket-name-2025"
+   export GCP_PROJECT_ID="your-gcp-project-id"
+   export BQ_DATASET_NAME="crypto_data"
+
+#### Run It
+1. **Start Docker**:
     ```bash
     docker-compose up -d --build
 
 - Builds bitcoin-pipeline-airflow:latest.
 - Starts Postgres, Airflow webserver, scheduler, and initializes the DB.
 
-3. **Access Airflow UI**:
+2. **Access Airflow UI**:
 - URL: http://localhost:8080
 - Login: admin / admin
 
-4. **Trigger Pipeline**:
+3. **Trigger Pipeline**:
     ```bash
     docker exec <scheduler_container_id> airflow dags trigger crypto_pipeline
 
 - Find <scheduler_container_id> with docker ps (e.g. final-project_dez2025-airflow-scheduler-1).
 
-5. **Monitor**:
+4. **Monitor**:
 - UI: Watch `crypto_pipeline` run (`pull_kaggle_data` → `load_to_bigquery` → `transform_data` → `partition_cluster_data`).
 - Logs: docker logs <scheduler_container_id>.
 
