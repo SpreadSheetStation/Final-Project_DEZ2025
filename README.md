@@ -147,7 +147,7 @@ For API Credentials Obtaining Guide, [click here](./credentialsGuide.md)
 - Replace the placeHolder for each variable. Note: KEEP the quotaton marks!
 - GCS_BUCKET_NAME: Think up a bucket name that is globally unique! Value can only contain lowercase letters, numeric characters, dashes (-), underscores (_), and dots (.)
 - GCP_PROJECT_ID: This is the ID of your GCP project! Not sure which one this is? [click here](https://youtu.be/hwIXiVvD9vQ)
-- BQ_DATA_NAME: Think up a BigQuery Dataset name
+- BQ_DATA_NAME: Think up a BigQuery Dataset name. Must contain only letters, numbers, or underscores.
 4. **Running the Bash script**:
    - Navigate to the Final-Project_DEZ2025/Start/ directory where you will find the run.sh file.
    - Run this file:
