@@ -1,7 +1,7 @@
 # Bitcoin Trading Data Pipeline ( Final-Project_DEZ2025 ) 
 Hello there! Welcome to my Final Capstone Project for the Data Engineering Zoomcamp 2025!
 
-FYI: This pipeline has been successfully executed multiple times via a new clean codespaces environment. It worked every time. If you have trouble setting-up, I recommend you to start a new codespaces for running this pipeline and follow along the steps in the [Setup Instructions](#setup-instructions)
+_FYI: This pipeline has been successfully executed multiple times via a new clean codespaces environment. It worked every time. If you have trouble setting-up, I recommend you to start a new codespaces for running this pipeline and follow along the steps in the [Setup Instructions](#setup-instructions)_
 
 For direct visual proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
 
@@ -13,7 +13,7 @@ This Bitcoin Trading Data Pipeline fulfills all Data Engineering Zoomcamp 2025 c
 - **Transformations**: PySpark computes trading metrics (`avg_price`, `vwap`, etc.).
 - **Dashboard**: Looker Studio visualizes volatility distribution and price trends.
 - **Reproducibility**: Detailed setup instructions ensure portability via Docker and Terraform.
-Built with Python, Airflow, Docker, PostgreSQL, and Looker Studio, this scalable pipeline delivers actionable insights for Bitcoin investors & traders, ready for future enhancements like trading bots or data science.
+Built with Python, (Py)Spark, Airflow, Docker, PostgreSQL, and Looker Studio, this scalable pipeline delivers actionable insights for Bitcoin investors & traders, ready for future enhancements like trading bots or data science.
 
 ## Table of Contents
 - [Project Introduction](#project-introduction)
