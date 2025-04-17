@@ -1,6 +1,8 @@
 # Bitcoin Trading Data Pipeline ( Final-Project_DEZ2025 ) 
 Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
 
+FYI: This pipeline has been successfully executed multiple times via a new clean codespaces environment. It worked every time. If you have trouble setting-up, I recommend you to start a new codespaces for running this pipeline and following the along steps in the [Setup Instructions](#setup-instructions)
+
 For direct proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
 
 ## Table of Contents
@@ -99,9 +101,12 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 - Docker & Docker Compose
 - Git
 - Terraform
-- Google Cloud credentials (`final-project-creds.json`) — Place in project root and ensure it has GCS and BigQuery permissions.
-- A `terraform.tfvars` file (see `terraform.tfvars.example` for template).
-- Environment variables: `GCS_BUCKET_NAME`, `GCP_PROJECT_ID`, `BQ_DATASET_NAME`
+For Prereq Installation Guide, [click here](./prereqGuide.md)
+
+#### Credentials
+- Google Cloud credentials
+- Kaggle credentials
+For Credentials Obtaining Guide, [click here](./credentialsGuide.md)
 
 #### Let's start!
 1. **Clone the Repo**:
@@ -110,21 +115,23 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
    cd Final-Project_DEZ2025
 
 #### Infrastructure
-1. **Prepare Terraform Variables**:
-   - Copy `terraform.tfvars.example` to `terraform.tfvars`:
+1. **Set Up Log Directory**:
+   - Create the log directory and set permissions for the Airflow user (UID 50000):
      ```bash
-     cp terraform/terraform.tfvars.example terraform/terraform.tfvars
+     mkdir -p docker-airflow-logs
+     sudo chown -R 50000:50000 docker-airflow-logs
      ```
-   - Edit `terraform.tfvars` with your GCP project ID, a unique bucket name, dataset name, and credentials path:
-     ```
-     credentials     = "./final-project-creds.json"
-     project         = "your-gcp-project-id"
-     gcs_bucket_name = "your-unique-bucket-name-2025"
-     bq_dataset_name = "crypto_data"
-     ```
-2. **Prepare GCP Credentials**:
-   - Place your service account key as `final-project-creds.json` in the project root.
-3. **Apply Terraform**:
+2. **Putting Keys in the right place**:
+   - Gcp_key.json should be put in Final-Project_DEZ2025/Start/gcp_key/
+   - Kaggle_key.json should be put in Final-Project_DEZ2025/Start/kaggle_key
+3. **Edit the place holders in the Bash script run.sh**:
+Inside Final-Project_DEZ2025/Start/ you will find run.sh
+Edit this file by opening it. Go to the '# User-editable variables' part
+   - GCS_BUCKET_NAME: Verzin bucketname (MUST BE UNIQUE) 
+!!! Name value can only contain lowercase letters, numeric characters, dashes (-), underscores (_), and dots (.)
+-GCP_PROJECT_ID: ID van je GCP project!!
+-BQ_DATA_NAME: Verzin bigQuery dataset name
+5. xxxxxxxx
    ```bash
    cd terraform
    terraform init
