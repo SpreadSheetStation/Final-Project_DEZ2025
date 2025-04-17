@@ -114,11 +114,11 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 
 For Prereq Installation Guide, [click here](./prereqGuide.md)
 
-#### Credentials
-- Google Cloud credentials
-- Kaggle credentials
+#### API Credentials
+- Google Cloud API credentials
+- Kaggle API credentials
 
-For Credentials Obtaining Guide, [click here](./credentialsGuide.md)
+For API Credentials Obtaining Guide, [click here](./credentialsGuide.md)
 
 #### Let's start!
 1. **Clone the Repo**:
