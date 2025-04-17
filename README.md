@@ -3,17 +3,17 @@ Hello there! Welcome to my Final Capstone Project for the Data Engineering Zoomc
 
 FYI: This pipeline has been successfully executed multiple times via a new clean codespaces environment. It worked every time. If you have trouble setting-up, I recommend you to start a new codespaces for running this pipeline and follow along the steps in the [Setup Instructions](#setup-instructions)
 
-For direct proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
+For direct visual proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
 
 This Bitcoin Trading Data Pipeline fulfills all Data Engineering Zoomcamp 2025 criteria:
-- **Problem Description**: Addresses trader overwhelm with clear, organized metrics for swing trading.
+- **Problem Description**: Addresses trader/investor overwhelm with clear, organized metrics for swing trading/investing.
 - **Cloud**: Leverages GCP (GCS, BigQuery) with Terraform for IaC.
 - **Data Ingestion**: Fully automated Airflow DAG pulls Kaggle data to GCS and BigQuery.
 - **Data Warehouse**: BigQuery tables (`raw_prices`, `daily_range`, `daily_range_partitioned`) are optimized with daily partitioning and volatility clustering.
 - **Transformations**: PySpark computes trading metrics (`avg_price`, `vwap`, etc.).
 - **Dashboard**: Looker Studio visualizes volatility distribution and price trends.
 - **Reproducibility**: Detailed setup instructions ensure portability via Docker and Terraform.
-Built with Python, Airflow, Docker, PostgreSQL, and Looker Studio, this scalable pipeline delivers actionable insights for Bitcoin traders, ready for future enhancements like trading bots or data science.
+Built with Python, Airflow, Docker, PostgreSQL, and Looker Studio, this scalable pipeline delivers actionable insights for Bitcoin investors & traders, ready for future enhancements like trading bots or data science.
 
 ## Table of Contents
 - [Project Introduction](#project-introduction)
@@ -46,7 +46,7 @@ _[An example of a trading chart with an overload of visual over-lays (indicators
 
 Also not all Data is always clearly shown on trading charts and it still requires precision to hover your mouse cursor over certain spots you want to see some actual metric-numbers about.
 
-To have all this data neatly organised and presented with a Dashboard gives an advantage by keeping a clear overview when making trade decisions or while backtesting Trades on Bitcoin; without the issue of over overwhelming a trader with too many stacked indicators on a single trading chart.
+To have all this data neatly organised and presented with a Dashboard gives an advantage by keeping a clear overview when making trade decisions or while backtesting Trades on Bitcoin; without the issue of over overwhelming a trader/investor with too many stacked indicators on a single trading chart.
 
 Most traders face losses, highlighting the need for clear, organized data over cluttered chart indicators. Besides a well developed strategy & mindset, the winning edge isn't found in having extra indicators stacked, but in proper and clear organisation of data, which will lead to a better comprehension of the price action. On chart indicators are often used in a visual relative way and— with X&Y-axis stretched/compressed to personal preferences —it can often be very misleading what a "big" or "small" candlestick or volume bar is. Actual data and numbers can be beneficial for advanced traders who prefer to dive deeper. This is what this data pipeline is providing to traders/investors who use the 1Day Timeframe (which is an important time frame for swing traders) to trade/invest in Bitcoin and backtest their Bitcoin trades/investments.
 
@@ -61,21 +61,21 @@ It pulls the Raw Data (OHLCV market data with trade execution metrics) of the Bi
 The Raw Data which has landed in a Google Cloud Storage bucket will then be loaded into BigQuery (Data Warehouse).
    - **Tool**: Google Cloud Storage → BigQuery.
    - **Action**: Loads raw CSV into BigQuery `raw_prices` table (schema autodetected, `WRITE_TRUNCATE`).
-   - **Output**: `final-project-dez2025.crypto_data.raw_prices`.
+   - **Output**: `raw_prices` in BigQuery Dataset.
 3. **Transform**: 
 The Raw Data is then transformed with PySpark to Enhanced Data (Trading Metrics), and stored in Google BigQuery for trading insights.
    - **Tool**: PySpark.
    - **Action**: Computes metrics (`avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`) from `raw_prices`, saves to `daily_range`.
-   - **Output**: `final-project-dez2025.crypto_data.daily_range`.
+   - **Output**: `daily_range` in BigQuery Dataset.
 4. **Partition and Cluster**:
    - **Tool**: BigQuery.
    - **Action**: Creates `daily_range_partitioned` from `daily_range`, partitioned by `DATE(date)` and clustered by `volatility_level`.
-   - **Output**: `final-project-dez2025.crypto_data.daily_range_partitioned`.
+   - **Output**: `daily_range_partitioned` in BigQuery Dataset.
 
 *Why ELT?* Data is loaded raw into BigQuery first (Load), then transformed with PySpark (Transform)—leveraging BigQuery’s storage and Spark’s processing power.
 
 ### Data Warehouse
-The pipeline uses **Google BigQuery** as the data warehouse, storing data in three tables under `final-project-dez2025.crypto_data`:
+The pipeline uses **Google BigQuery** as the data warehouse, storing data in three tables under your BigQuery Dataset:
 - **`raw_prices`**: Raw Bitcoin candlesticks (~2,648+ rows, growing daily), unpartitioned to preserve original data integrity.
 - **`daily_range`**: Intermediate table with trading metrics (`date`, `avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`), unpartitioned for flexibility during transformation.
 - **`daily_range_partitioned`**: Optimized table for trading analysis, partitioned by `DATE(date)` (daily) and clustered by `volatility_level` (Low/Medium/High).
@@ -94,13 +94,13 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 
 ### Tech Stack
 - **Python**: Core language for scripting and DAG logic.
-- **Apache Airflow**: Orchestrates the daily pipeline (pull, load, transform).
+- **Apache Airflow**: Orchestrates the daily pipeline (extract, load, transform).
 - **Docker**: Containers for Airflow, PySpark, and Postgres—ensures portability and consistency.
 - **PostgreSQL**: Airflow’s metadata database (replaced SQLite for reliability).
 - **Terraform**: Provisions Google Cloud infrastructure (GCS bucket, BigQuery dataset).
 - **Google Cloud Platform (GCP)**:
-  - **Google Cloud Storage (GCS)**: Stores raw CSV data (`gs://bitcoin-data-bucket-2025/raw/`).
-  - **Google BigQuery**: Data warehouse for raw (`raw_prices`) and transformed (`daily_range_partitioned`) tables.
+  - **Google Cloud Storage (GCS)**: Stores raw CSV data).
+  - **Google BigQuery**: Data warehouse for raw (`raw_prices`) and transformed (`daily_range`, `daily_range_partitioned`) tables.
 - **PySpark**: Batch processes data into trading metrics.
 - **Kaggle API**: Pulls the latest dataset (`btc_1d_data_2018_to_2025.csv`) via `kagglehub`.
 - **Looker Studio**: Dashboard for visualizing price trends and volatility.
