@@ -101,11 +101,13 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 - Docker & Docker Compose
 - Git
 - Terraform
+
 For Prereq Installation Guide, [click here](./prereqGuide.md)
 
 #### Credentials
 - Google Cloud credentials
 - Kaggle credentials
+
 For Credentials Obtaining Guide, [click here](./credentialsGuide.md)
 
 #### Let's start!
@@ -114,7 +116,7 @@ For Credentials Obtaining Guide, [click here](./credentialsGuide.md)
    git clone https://github.com/SpreadSheetStation/Final-Project_DEZ2025.git
    cd Final-Project_DEZ2025
 
-#### Infrastructure
+#### Infrastructure & Preparation
 1. **Set Up Log Directory**:
    - Create the log directory and set permissions for the Airflow user (UID 50000):
      ```bash
@@ -125,47 +127,63 @@ For Credentials Obtaining Guide, [click here](./credentialsGuide.md)
    - Gcp_key.json should be put in Final-Project_DEZ2025/Start/gcp_key/
    - Kaggle_key.json should be put in Final-Project_DEZ2025/Start/kaggle_key
 3. **Edit the place holders in the Bash script run.sh**:
-Inside Final-Project_DEZ2025/Start/ you will find run.sh
-Edit this file by opening it. Go to the '# User-editable variables' part
-   - GCS_BUCKET_NAME: Verzin bucketname (MUST BE UNIQUE) 
-!!! Name value can only contain lowercase letters, numeric characters, dashes (-), underscores (_), and dots (.)
--GCP_PROJECT_ID: ID van je GCP project!!
--BQ_DATA_NAME: Verzin bigQuery dataset name
-5. xxxxxxxx
+   - Inside Final-Project_DEZ2025/Start/ you will find the run.sh file. Edit this file by opening it and go to the '# User-editable variables' part where you will see this:
    ```bash
-   cd terraform
-   terraform init
-   terraform apply
+   # User-editable variables
+   export GCS_BUCKET_NAME="placeHolder"
+   export GCP_PROJECT_ID="placeHolder"
+   export BQ_DATASET_NAME="placeHolder"
 
-- Creates your GCS bucket and BigQuery dataset.
-
-4. **Set Environment Variables**:
+- Replace the placeHolder for each variable. Note: KEEP the quotaton marks!
+- GCS_BUCKET_NAME: Think up a bucket name that is globally unique! Value can only contain lowercase letters, numeric characters, dashes (-), underscores (_), and dots (.)
+- GCP_PROJECT_ID: This is the ID of your GCP project! Not sure which one this is? [click here](https://www.youtube.com/watch?v=your-video-id)
+- BQ_DATA_NAME: Think up a BigQuery Dataset name
+4. **Running the Bash script**:
+   - Navigate to the Final-Project_DEZ2025/Start/ directory where you will find the run.sh file.
+   - Run this file:
    ```bash
-   export GCS_BUCKET_NAME="your-unique-bucket-name-2025"
-   export GCP_PROJECT_ID="your-gcp-project-id"
-   export BQ_DATASET_NAME="crypto_data"
+   chmod +x run.sh
+   source ./run.sh
+
+- Sets your environment variables and creates terraform.tfvars for our pipeline.
 
 #### Run It
-1. **Start Docker**:
+1. **Start Terraform**:
+   - Navigate to the Final-Project_DEZ2025/terraform/ directory.
+   - Start Terraform:
+    ```bash
+    terraform init
+    terraform apply
+
+- Builds your GCP Bucket & BigQuery Dataset.
+
+2. **Start Docker**:
+   - Start Docker:
     ```bash
     docker-compose up -d --build
 
 - Builds bitcoin-pipeline-airflow:latest.
 - Starts Postgres, Airflow webserver, scheduler, and initializes the DB.
+- Automatically triggers the pipeline to run.
 
-2. **Access Airflow UI**:
+3. **Access Airflow UI**:
+- Wait around 60-90 seconds first before Airflow UI can be successfully accessed
 - URL: http://localhost:8080
 - Login: admin / admin
+- UI: Watch `crypto_pipeline` run (`pull_kaggle_data` → `load_to_bigquery` → `transform_data` → `partition_cluster_data`).
 
-3. **Trigger Pipeline**:
+4. **[OPTIONAL] Manually (Re-)Trigger Pipeline**:
     ```bash
     docker exec <scheduler_container_id> airflow dags trigger crypto_pipeline
 
-- Find <scheduler_container_id> with docker ps (e.g. final-project_dez2025-airflow-scheduler-1).
+- Use the 'docker ps' command in your CLI first to find <scheduler_container_id> (e.g. final-project_dez2025-airflow-scheduler-1).
 
-4. **Monitor**:
-- UI: Watch `crypto_pipeline` run (`pull_kaggle_data` → `load_to_bigquery` → `transform_data` → `partition_cluster_data`).
-- Logs: docker logs <scheduler_container_id>.
+5. **Confirming a Succesful Pipeline Run**:
+- Check the Airflow UI: If all the DAG tasks turn Green and status is 'success' the entire Pipeline ran successfully.
+- Check Airflow Task Status via CLI for a recent run with 'state: success':
+    ```bash
+    docker exec final-project_dez2025-airflow-webserver-1 airflow dags list-runs -d crypto_pipeline
+- Verify Outputs in GCS and BigQuery UI: Check if Bucket & BigQuery Dataset are filled succesfully
 
 ## Outputs
 - **Infrastructure**: Terraform-managed GCS bucket (`bitcoin-data-bucket-2025`) and BigQuery dataset (`final-project-dez2025.crypto_data`).
