@@ -14,15 +14,16 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/final-project-creds.json
-      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-bitcoin-data-bucket-2025}
-      - GCP_PROJECT_ID=${GCP_PROJECT_ID:-final-project-dez2025}
-      - BQ_DATASET_NAME=${BQ_DATASET_NAME:-crypto_data}
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/gcp-credentials.json
+      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - BQ_DATASET_NAME=${BQ_DATASET_NAME}
     volumes:
       - ./crypto_pipeline/dags:/opt/airflow/dags
-      - ./final-project-creds.json:/opt/airflow/final-project-creds.json
+      - ${GCP_CREDENTIALS_PATH}:/opt/airflow/gcp-credentials.json
+      - ${KAGGLE_CREDENTIALS_PATH}:/opt/airflow/kaggle.json
       - ./docker-airflow-logs:/opt/airflow/logs
-    command: bash -c "airflow db init && airflow dags reserialize && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com && airflow dags unpause crypto_pipeline"
+    command: bash -c "mkdir -p /opt/airflow/logs/scheduler && airflow db init && airflow dags reserialize && airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com && airflow dags unpause crypto_pipeline"
     depends_on:
       - postgres
 
@@ -31,18 +32,19 @@ services:
     image: bitcoin-pipeline-airflow:latest
     volumes:
       - ./crypto_pipeline/dags:/opt/airflow/dags
-      - ./final-project-creds.json:/opt/airflow/final-project-creds.json
+      - ${GCP_CREDENTIALS_PATH}:/opt/airflow/gcp-credentials.json
+      - ${KAGGLE_CREDENTIALS_PATH}:/opt/airflow/kaggle.json
       - ./docker-airflow-logs:/opt/airflow/logs
     environment:
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/final-project-creds.json
-      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-bitcoin-data-bucket-2025}
-      - GCP_PROJECT_ID=${GCP_PROJECT_ID:-final-project-dez2025}
-      - BQ_DATASET_NAME=${BQ_DATASET_NAME:-crypto_data}
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/gcp-credentials.json
+      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - BQ_DATASET_NAME=${BQ_DATASET_NAME}
     ports:
       - "8080:8080"
-    command: bash -c "sleep 10 && airflow webserver -p 8080"
+    command: bash -c "mkdir -p /opt/airflow/logs/scheduler && sleep 10 && airflow webserver -p 8080"
     depends_on:
       - postgres
       - airflow-init
@@ -52,16 +54,17 @@ services:
     image: bitcoin-pipeline-airflow:latest
     volumes:
       - ./crypto_pipeline/dags:/opt/airflow/dags
-      - ./final-project-creds.json:/opt/airflow/final-project-creds.json
+      - ${GCP_CREDENTIALS_PATH}:/opt/airflow/gcp-credentials.json
+      - ${KAGGLE_CREDENTIALS_PATH}:/opt/airflow/kaggle.json
       - ./docker-airflow-logs:/opt/airflow/logs
     environment:
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/final-project-creds.json
-      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME:-bitcoin-data-bucket-2025}
-      - GCP_PROJECT_ID=${GCP_PROJECT_ID:-final-project-dez2025}
-      - BQ_DATASET_NAME=${BQ_DATASET_NAME:-crypto_data}
-    command: bash -c "sleep 10 && airflow scheduler"
+      - GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/gcp-credentials.json
+      - GCS_BUCKET_NAME=${GCS_BUCKET_NAME}
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - BQ_DATASET_NAME=${BQ_DATASET_NAME}
+    command: bash -c "mkdir -p /opt/airflow/logs/scheduler && sleep 10 && airflow scheduler"
     depends_on:
       - postgres
       - airflow-init

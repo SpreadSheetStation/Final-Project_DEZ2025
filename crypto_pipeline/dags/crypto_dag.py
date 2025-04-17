@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 def pull_kaggle_data():
     """Pulls daily Bitcoin data from Kaggle and uploads to GCS."""
     logger.info("Starting pull_kaggle_data")
+    # Set Kaggle config directory to use mounted kaggle.json
+    os.environ["KAGGLE_CONFIG_DIR"] = "/opt/airflow"
     df = kagglehub.load_dataset(
         kagglehub.KaggleDatasetAdapter.PANDAS,
         "novandraanugrah/bitcoin-historical-datasets-2018-2024",
@@ -27,7 +29,7 @@ def pull_kaggle_data():
     df.to_csv(local_file, index=False)
     logger.info(f"Dataset pulled and saved to {local_file}")
     client = storage.Client()
-    bucket = client.get_bucket(os.getenv("GCS_BUCKET_NAME", "bitcoin-data-bucket-2025"))
+    bucket = client.get_bucket(os.getenv("GCS_BUCKET_NAME"))
     blob = bucket.blob("raw/btc_1d_data_2018_to_2025.csv")
     blob.upload_from_filename(local_file)
     logger.info("Uploaded to GCS!")
@@ -37,8 +39,8 @@ def load_to_bigquery():
     """Loads CSV from GCS to BigQuery raw_prices table."""
     logger.info("Starting load_to_bigquery")
     client = bigquery.Client()
-    project = os.getenv("GCP_PROJECT_ID", "final-project-dez2025")
-    dataset = os.getenv("BQ_DATASET_NAME", "crypto_data")
+    project = os.getenv("GCP_PROJECT_ID")
+    dataset = os.getenv("BQ_DATASET_NAME")
     table_id = f"{project}.{dataset}.raw_prices"
     job_config = bigquery.LoadJobConfig(
         source_format=bigquery.SourceFormat.CSV,
@@ -46,7 +48,7 @@ def load_to_bigquery():
         autodetect=True,
         write_disposition="WRITE_TRUNCATE",
     )
-    uri = f"gs://{os.getenv('GCS_BUCKET_NAME', 'bitcoin-data-bucket-2025')}/raw/btc_1d_data_2018_to_2025.csv"
+    uri = f"gs://{os.getenv('GCS_BUCKET_NAME')}/raw/btc_1d_data_2018_to_2025.csv"
     load_job = client.load_table_from_uri(uri, table_id, job_config=job_config)
     load_job.result()
     logger.info("CSV loaded to BigQuery as raw_prices")
@@ -62,7 +64,7 @@ def transform_data():
         .config("spark.driver.memory", "2g") \
         .config("spark.executor.memory", "2g") \
         .config("spark.pyspark.python", "python3") \
-        .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", "/opt/airflow/final-project-creds.json") \
+        .config("spark.hadoop.google.cloud.auth.service.account.json.keyfile", "/opt/airflow/gcp-credentials.json") \
         .config("spark.hadoop.fs.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem") \
         .config("spark.hadoop.fs.AbstractFileSystem.gs.impl", "com.google.cloud.hadoop.fs.gcs.GoogleHadoopFS") \
         .getOrCreate()
@@ -70,8 +72,8 @@ def transform_data():
     
     try:
         # Load raw_prices
-        project = os.getenv("GCP_PROJECT_ID", "final-project-dez2025")
-        dataset = os.getenv("BQ_DATASET_NAME", "crypto_data")
+        project = os.getenv("GCP_PROJECT_ID")
+        dataset = os.getenv("BQ_DATASET_NAME")
         df = spark.read.format("bigquery") \
             .option("table", f"{project}.{dataset}.raw_prices") \
             .load()
@@ -125,7 +127,7 @@ def transform_data():
         # Write to BigQuery
         df_transformed.write.format("bigquery") \
             .option("table", f"{project}.{dataset}.daily_range") \
-            .option("temporaryGcsBucket", os.getenv("GCS_BUCKET_NAME", "bitcoin-data-bucket-2025")) \
+            .option("temporaryGcsBucket", os.getenv("GCS_BUCKET_NAME")) \
             .mode("overwrite") \
             .save()
         logger.info("Transformed and saved daily_range successfully")
@@ -144,8 +146,8 @@ def partition_cluster_data():
     client = bigquery.Client()
     try:
         # SQL to create partitioned/clustered table
-        project = os.getenv("GCP_PROJECT_ID", "final-project-dez2025")
-        dataset = os.getenv("BQ_DATASET_NAME", "crypto_data")
+        project = os.getenv("GCP_PROJECT_ID")
+        dataset = os.getenv("BQ_DATASET_NAME")
         query = f"""
         CREATE OR REPLACE TABLE `{project}.{dataset}.daily_range_partitioned`
         PARTITION BY DATE(date)

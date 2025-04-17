@@ -33,4 +33,4 @@ ENV AIRFLOW_HOME=/opt/airflow
 
 COPY crypto_pipeline/dags/ /opt/airflow/dags/
 
-ENV GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/final-project-creds.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=/opt/airflow/gcp-credentials.json
