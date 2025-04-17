@@ -56,7 +56,7 @@ Most traders face losses, highlighting the need for clear, organized data over c
 It pulls the Raw Data (OHLCV market data with trade execution metrics) of the Bitcoin Daily Candle Timeframe from Kaggle’s [“Bitcoin Historical Datasets 2018-2025”](https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024?select=btc_1d_data_2018_to_2025.csv), 
    - **Tool**: Kaggle API (`kagglehub`).
    - **Action**: Pulls `btc_1d_data_2018_to_2025.csv` daily from Kaggle.
-   - **Output**: Raw CSV uploaded to GCS (`gs://bitcoin-data-bucket-2025/raw/`).
+   - **Output**: Raw CSV uploaded to GCS (`gs://<your-bucket-name>/raw/`).
 2. **Load**: 
 The Raw Data which has landed in a Google Cloud Storage bucket will then be loaded into BigQuery (Data Warehouse).
    - **Tool**: Google Cloud Storage → BigQuery.
@@ -197,8 +197,8 @@ For API Credentials Obtaining Guide, [click here](./credentialsGuide.md)
 - Verify Outputs in GCS and BigQuery UI: Check if Bucket & BigQuery Dataset are filled succesfully
 
 ## Outputs
-- **Infrastructure**: Terraform-managed GCS bucket (`bitcoin-data-bucket-2025`) and BigQuery dataset (`final-project-dez2025.crypto_data`).
-- **GCS**: `gs://bitcoin-data-bucket-2025/raw/btc_1d_data_2018_to_2025.csv` (daily updated).
+- **Infrastructure**: Terraform-managed GCS bucket and BigQuery dataset.
+- **GCS**: `gs://<your-bucket-name>/raw/btc_1d_data_2018_to_2025.csv` (daily updated).
 - **BigQuery**:
   - `raw_prices`: Raw OHLCV market data with trade execution metrics (~2,648+ rows, growing daily).
   - `daily_range`: Transformed metrics (`date`, `avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`).
