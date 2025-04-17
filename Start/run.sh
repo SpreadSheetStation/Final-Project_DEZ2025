@@ -35,9 +35,9 @@ KAGGLE_JSON=$(ls "$SCRIPT_DIR/kaggle_key/"*.json 2>/dev/null)
 export KAGGLE_CREDENTIALS_PATH="$KAGGLE_JSON"
 
 # User-editable variables
-export GCS_BUCKET_NAME="zomaarietsblabla2025xyz"
-export GCP_PROJECT_ID="cryptopipeline-456916"
-export BQ_DATASET_NAME="bqBitcoin"
+export GCS_BUCKET_NAME="placeHolder"
+export GCP_PROJECT_ID="placeHolder"
+export BQ_DATASET_NAME="placeHolder"
 
 # Show variables
 echo "Environment variables set:"
