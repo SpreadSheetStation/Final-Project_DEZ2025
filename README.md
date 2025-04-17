@@ -168,6 +168,7 @@ For API Credentials Obtaining Guide, [click here](./credentialsGuide.md)
 - Builds your GCP Bucket & BigQuery Dataset.
 
 2. **Start Docker**:
+   - Navigate to the Final-Project_DEZ2025/ directory (where your Docker files are located).
    - Start Docker:
     ```bash
     docker-compose up -d --build
