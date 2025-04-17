@@ -29,9 +29,9 @@ To use Google Cloud Platform (GCP) services in the project, you need to create a
 - Click **Create service account**.
 - **Service account details**: Enter a **Service account name** and click **Create and continue**.
 - **Grant this service account access to project**: Assign the following roles:
-- BigQuery Admin
-- Compute Admin
-- Storage Admin
+- _BigQuery Admin_
+- _Compute Admin_
+- _Storage Admin_
 - Click **Continue**.
 - **Grant users access to this service account**: Leave this empty and click **Done**.
 
