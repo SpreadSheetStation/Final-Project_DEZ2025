@@ -1,9 +1,19 @@
 # Bitcoin Trading Data Pipeline ( Final-Project_DEZ2025 ) 
-Hello there! Welcome to my Final Project for the Data Engineering Zoomcamp 2025!
+Hello there! Welcome to my Final Capstone Project for the Data Engineering Zoomcamp 2025!
 
-FYI: This pipeline has been successfully executed multiple times via a new clean codespaces environment. It worked every time. If you have trouble setting-up, I recommend you to start a new codespaces for running this pipeline and following the along steps in the [Setup Instructions](#setup-instructions)
+FYI: This pipeline has been successfully executed multiple times via a new clean codespaces environment. It worked every time. If you have trouble setting-up, I recommend you to start a new codespaces for running this pipeline and follow along the steps in the [Setup Instructions](#setup-instructions)
 
 For direct proof that this Pipeline is working, have a look at the section: [Other Screenshots & Videos](#other-screenshots-videos)
+
+This Bitcoin Trading Data Pipeline fulfills all Data Engineering Zoomcamp 2025 criteria:
+- **Problem Description**: Addresses trader overwhelm with clear, organized metrics for swing trading.
+- **Cloud**: Leverages GCP (GCS, BigQuery) with Terraform for IaC.
+- **Data Ingestion**: Fully automated Airflow DAG pulls Kaggle data to GCS and BigQuery.
+- **Data Warehouse**: BigQuery tables (`raw_prices`, `daily_range`, `daily_range_partitioned`) are optimized with daily partitioning and volatility clustering.
+- **Transformations**: PySpark computes trading metrics (`avg_price`, `vwap`, etc.).
+- **Dashboard**: Looker Studio visualizes volatility distribution and price trends.
+- **Reproducibility**: Detailed setup instructions ensure portability via Docker and Terraform.
+Built with Python, Airflow, Docker, PostgreSQL, and Looker Studio, this scalable pipeline delivers actionable insights for Bitcoin traders, ready for future enhancements like trading bots or data science.
 
 ## Table of Contents
 - [Project Introduction](#project-introduction)
@@ -15,7 +25,6 @@ For direct proof that this Pipeline is working, have a look at the section: [Oth
 - [Partitioning and Clustering](#partitioning-and-clustering)
 - [Setup Instructions](#setup-instructions)
 - [Outputs](#outputs)
-- [Conclusion](#conclusion)
 - [Dashboard](#dashboard)
 - [Future Scalability](#future-scalability)
 - [Other Screenshots & Videos](#other-screenshots-videos)
@@ -145,7 +154,7 @@ For Credentials Obtaining Guide, [click here](./credentialsGuide.md)
    chmod +x run.sh
    source ./run.sh
 
-- Sets your environment variables and creates terraform.tfvars for our pipeline.
+- Sets your environment variables and creates terraform.tfvars for your pipeline.
 
 #### Run It
 1. **Start Terraform**:
@@ -192,17 +201,6 @@ For Credentials Obtaining Guide, [click here](./credentialsGuide.md)
   - `raw_prices`: Raw OHLCV market data with trade execution metrics (~2,648+ rows, growing daily).
   - `daily_range`: Transformed metrics (`date`, `avg_price`, `price_range`, `price_range_pct`, `vwap`, `candle_color`, `volatility_level`).
   - `daily_range_partitioned`: Optimized for trading analysis, partitioned by `DATE(date)` and clustered by `volatility_level`—primary table for dashboard and queries.
-
-## Conclusion
-This Bitcoin Trading Data Pipeline fulfills all Data Engineering Zoomcamp 2025 criteria:
-- **Problem Description**: Addresses trader overwhelm with clear, organized metrics for swing trading.
-- **Cloud**: Leverages GCP (GCS, BigQuery) with Terraform for IaC.
-- **Data Ingestion**: Fully automated Airflow DAG pulls Kaggle data to GCS and BigQuery.
-- **Data Warehouse**: BigQuery tables (`raw_prices`, `daily_range`, `daily_range_partitioned`) are optimized with daily partitioning and volatility clustering.
-- **Transformations**: PySpark computes trading metrics (`avg_price`, `vwap`, etc.).
-- **Dashboard**: Looker Studio visualizes volatility distribution and price trends.
-- **Reproducibility**: Detailed setup instructions ensure portability via Docker and Terraform.
-Built with Python, Airflow, Docker, PostgreSQL, and Looker Studio, this scalable pipeline delivers actionable insights for Bitcoin traders, ready for future enhancements like trading bots or data science.
 
 ## Dashboard
 A Looker Studio dashboard visualizes Bitcoin trading metrics from `daily_range_partitioned`:
