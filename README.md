@@ -218,9 +218,8 @@ This pipeline offers exciting potential for future enhancements to support advan
 These possibilities leverage the pipeline’s flexible cloud architecture (GCP, Airflow) and clean data, setting the stage for scalable exploration as trading needs evolve.
 
 ## Other Screenshots Videos
-Videos (Proof of a Green working Pipeline):
-- https://www.youtube.com/watch?v=F5i35GIHSQA
-- https://www.youtube.com/watch?v=9RP63lYncVk
+Video (Proof of a Green working Pipeline):
+- https://youtu.be/LSHaYJF-0rw
 
 Screenshots:
 - [ALL GREEN: Airflow](./Images/Airflow.png)  
