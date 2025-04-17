@@ -110,6 +110,7 @@ This setup optimizes queries for my trading dashboard (e.g., “show `price_rang
 - Docker & Docker Compose
 - Git
 - Terraform
+- Kagglehub
 
 For Prereq Installation Guide, [click here](./prereqGuide.md)
 
